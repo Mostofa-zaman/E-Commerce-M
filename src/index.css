@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+
+@theme {
+    --font-josefin: "Josefin Sans", sans-serif;
+}
+
+.slick-dots .slick-active .dot-item {
+    background-color: #FB2E86 !important;
+    width: 24px !important;
+}
+
