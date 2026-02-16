@@ -10,3 +10,6 @@
     width: 24px !important;
 }
 
+.input {
+  @apply w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-pink-500 transition;
+}
