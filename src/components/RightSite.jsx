@@ -34,7 +34,6 @@ const RightSite = ({ view = "grid", products = [] }) => {
   /* ---------------- Star Renderer ---------------- */
   const renderStars = (rating = 0) => {
     const rounded = Math.round(rating);
-
     return (
       <div className="flex gap-1 text-xs">
         {[...Array(5)].map((_, i) => (
@@ -47,7 +46,6 @@ const RightSite = ({ view = "grid", products = [] }) => {
     );
   };
 
-  /* ===================================================== */
 
   return (
     <div className="w-full">
@@ -57,7 +55,6 @@ const RightSite = ({ view = "grid", products = [] }) => {
           {currentItems.length ? (
             currentItems.map((item) => {
               const price = getPrice(item);
-
               return (
                 <Link
                   key={item.id}
@@ -72,14 +69,10 @@ const RightSite = ({ view = "grid", products = [] }) => {
                       className="w-32 sm:w-36 lg:w-40 object-contain transition-transform duration-300 group-hover:scale-110"
                     />
                   </div>
-
-                  {/* Content */}
                   <div className="p-4 text-center">
                     <h3 className="font-josefin text-[#151875] text-base lg:text-lg font-bold mb-2 line-clamp-1">
                       {item.title}
                     </h3>
-
-                    {/* Colors */}
                     <div className="flex justify-center gap-2 mb-3">
                       <span className="w-3 h-3 rounded-full bg-[#DE9034]" />
                       <span className="w-3 h-3 rounded-full bg-[#EC42A2]" />
@@ -111,7 +104,6 @@ const RightSite = ({ view = "grid", products = [] }) => {
           {currentItems.length ? (
             currentItems.map((item) => {
               const price = getPrice(item);
-
               return (
                 <div
                   key={item.id}
@@ -128,14 +120,11 @@ const RightSite = ({ view = "grid", products = [] }) => {
                       className="w-32 object-contain group-hover:scale-105 transition"
                     />
                   </Link>
-
-                  {/* Info */}
                   <div className="flex flex-col justify-between flex-1">
                     <div>
                       <h3 className="font-josefin text-[#111C85] text-lg font-bold mb-2">
                         {item.title}
                       </h3>
-
                       <div className="flex flex-wrap items-center gap-3 mb-2">
                         <span className="text-[#111C85] font-semibold">
                           ${price.final.toFixed(2)}
@@ -143,10 +132,8 @@ const RightSite = ({ view = "grid", products = [] }) => {
                         <span className="text-pink-500 line-through">
                           ${price.original.toFixed(2)}
                         </span>
-
                         {renderStars(item.rating)}
                       </div>
-
                       <p className="text-gray-500 text-sm line-clamp-2">
                         {item.description}
                       </p>
