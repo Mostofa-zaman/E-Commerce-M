@@ -1,170 +1,209 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from "react";
 import { BsCart2 } from "react-icons/bs";
 import { FaRegHeart, FaStar } from "react-icons/fa";
 import { LuZoomIn } from "react-icons/lu";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
-const RightSite = ({ view, products }) => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
+const ITEMS_PER_PAGE = 9;
 
-    // Logic for displaying current items
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(products.length / itemsPerPage);
+const RightSite = ({ view = "grid", products = [] }) => {
+  const [currentPage, setCurrentPage] = useState(1);
 
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  /* ---------------- Pagination Logic ---------------- */
+  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
 
-    // Dynamic Star Rendering Logic
-    const renderStars = (rating) => {
-        const validRating = rating || 0;
-        const roundedRating = Math.round(validRating);
+  const currentItems = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return products.slice(start, start + ITEMS_PER_PAGE);
+  }, [currentPage, products]);
 
-        return (
-            <div className="flex text-[12px] gap-1">
-                {Array.from({ length: 5 }, (_, index) => (
-                    <FaStar
-                        key={index}
-                        className={index < roundedRating ? "text-[#FFC107]" : "text-[#B2B2B2]"}
-                    />
-                ))}
-            </div>
-        );
+  const paginate = (page) => setCurrentPage(page);
+
+  /* ---------------- Price Calculation ---------------- */
+  const getPrice = (item) => {
+    const original = item?.price || 0;
+    const discount = item?.discountPercentage || 0;
+    const final = original - (original * discount) / 100;
+
+    return {
+      original,
+      final,
     };
+  };
+
+  /* ---------------- Star Renderer ---------------- */
+  const renderStars = (rating = 0) => {
+    const rounded = Math.round(rating);
 
     return (
-        <>
-            {view === 'grid' ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {currentItems.length > 0 ? (
-                        currentItems.map((item) => {
-                            // Price Calculation
-                            const originalPrice = item.price || 0;
-                            const discount = item.discountPercentage || 0;
-                            const discountAmount = (originalPrice * discount) / 100;
-                            const finalPrice = originalPrice - discountAmount;
+      <div className="flex gap-1 text-xs">
+        {[...Array(5)].map((_, i) => (
+          <FaStar
+            key={i}
+            className={i < rounded ? "text-yellow-400" : "text-gray-300"}
+          />
+        ))}
+      </div>
+    );
+  };
 
-                            return (
-                                <Link to={`/productsDetails/${item.id}`} key={item.id} className="group w-full bg-white shadow-none hover:shadow-lg transition-shadow duration-300 overflow-hidden">
-                                    <div className="w-full h-65 bg-[#F6F7FB] flex justify-center items-center relative overflow-hidden group-hover:bg-[#EBF4F3] transition-colors">
-                                        <img src={item.thumbnail} alt={item.title} className="w-45 h-45 object-contain group-hover:scale-110 transition-transform duration-300" />
-                                        <div className="absolute left-3 bottom-8 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-full group-hover:translate-x-0">
-                                            {/* <div className="w-8 h-8 rounded-full flex items-center justify-center text-[#151875] hover:bg-white cursor-pointer transition-colors">
-                                                <BsCart2 size={16} />
-                                            </div>
-                                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-[#151875] hover:bg-white cursor-pointer transition-colors">
-                                                <LuZoomIn size={16} />
-                                            </div>
-                                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-[#151875] hover:bg-white cursor-pointer transition-colors">
-                                                <FaRegHeart size={15} />
-                                            </div> */}
-                                        </div>
-                                    </div>
-                                    <div className="py-4 text-center">
-                                        <h3 className="font-josefin text-[#151875] text-[18px] font-bold mb-2">
-                                            {item.title}
-                                        </h3>
-                                        <div className="flex justify-center gap-2 mb-3">
-                                            <span className="w-3 h-3 rounded-full bg-[#DE9034]"></span>
-                                            <span className="w-3 h-3 rounded-full bg-[#EC42A2]"></span>
-                                            <span className="w-3 h-3 rounded-full bg-[#8568FF]"></span>
-                                        </div>
-                                        <div className="flex justify-center gap-3 font-josefin">
-                                            <span className="text-[#151875] text-[14px]">${finalPrice.toFixed(2)}</span>
-                                            <span className="text-[#FB2E86] text-[14px] line-through">${originalPrice.toFixed(2)}</span>
-                                        </div>
-                                    </div>
-                                </Link>
-                            );
-                        })
-                    ) : (
-                        <div className="col-span-3 text-center py-10">
-                            <h3 className="text-[#151875] font-josefin text-[20px]">No products found matching your filter.</h3>
-                        </div>
-                    )}
-                </div>
-            ) : (
-                <div className="flex flex-col gap-8">
-                    {currentItems.length > 0 ? (
-                        currentItems.map((item) => {
-                            // Price Calculation
-                            const originalPrice = item.price || 0;
-                            const discount = item.discountPercentage || 0;
-                            const discountAmount = (originalPrice * discount) / 100;
-                            const finalPrice = originalPrice - discountAmount;
+  /* ===================================================== */
 
-                            return (
-                                <div key={item.id} className="group w-full flex flex-col sm:flex-row gap-6 p-4 bg-white shadow-sm hover:shadow-md transition-shadow">
-                                    <Link to={`/productsDetails/${item.id}`} className="w-full sm:w-1/3 lg:w-75 h-52 bg-[#F6F7FB] flex justify-center items-center shrink-0">
-                                        <img src={item.thumbnail} alt={item.title} className="w-40 h-40 object-contain group-hover:scale-105 transition-transform duration-300" />
-                                    </Link>
-                                    <div className="flex flex-col justify-center w-full">
-                                        <div className="flex items-center gap-4 mb-3">
-                                            <h3 className="font-josefin text-[#111C85] text-[18px] font-bold">
-                                                {item.title}
-                                            </h3>
-                                            <div className="flex gap-2">
-                                                <span className="w-3 h-3 rounded-full bg-[#DE9034]"></span>
-                                                <span className="w-3 h-3 rounded-full bg-[#EC42A2]"></span>
-                                                <span className="w-3 h-3 rounded-full bg-[#8568FF]"></span>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-4 mb-3">
-                                            <div className="flex items-center gap-3 font-josefin">
-                                                <span className="text-[#111C85] text-[14px]">${finalPrice.toFixed(2)}</span>
-                                                <span className="text-[#FF2AAA] text-[14px] line-through">${originalPrice.toFixed(2)}</span>
-                                            </div>
-                                            {renderStars(item.rating)}
-                                        </div>
-                                        <p className="font-lato text-[#9295AA] text-[14px] leading-6 mb-4 line-clamp-2 pr-4">
-                                            {item.description}
-                                        </p>
-                                        <div className="flex gap-4">
-                                            <Link to={`/productsDetails/${item.id}`} className="w-8 h-8 rounded-full bg-white shadow-md text-[#535399] flex justify-center items-center cursor-pointer hover:bg-[#EEEFFB] transition-colors">
-                                                <BsCart2 size={16} />
-                                            </Link>
-                                            <div className="w-8 h-8 rounded-full bg-white shadow-md text-[#535399] flex justify-center items-center cursor-pointer hover:bg-[#EEEFFB] transition-colors">
-                                                <FaRegHeart size={15} />
-                                            </div>
-                                            <div className="w-8 h-8 rounded-full bg-white shadow-md text-[#535399] flex justify-center items-center cursor-pointer hover:bg-[#EEEFFB] transition-colors">
-                                                <LuZoomIn size={16} />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })
-                    ) : (
-                        <div className="text-center py-10">
-                            <h3 className="text-[#151875] font-josefin text-[20px]">No products found matching your filter.</h3>
-                        </div>
-                    )}
-                </div>
-            )}
+  return (
+    <div className="w-full">
+      {/* ================= GRID VIEW ================= */}
+      {view === "grid" ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 lg:gap-8">
+          {currentItems.length ? (
+            currentItems.map((item) => {
+              const price = getPrice(item);
 
-            {/* Pagination Controls */}
-            {totalPages > 1 && (
-                <div className="flex justify-center mt-12 mb-4">
-                    <div className="flex gap-2">
-                        {Array.from({ length: totalPages }, (_, i) => (
-                            <button
-                                key={i + 1}
-                                onClick={() => paginate(i + 1)}
-                                className={`w-8 h-8 flex justify-center items-center border font-josefin text-[14px] rounded-sm transition-all duration-300
-                                    ${currentPage === i + 1
-                                        ? 'bg-[#FB2E86] text-white border-[#FB2E86]'
-                                        : 'bg-white text-[#E0D3F5] border-[#E0D3F5] hover:bg-[#FB2E86] hover:text-white hover:border-[#FB2E86]'
-                                    }`}
-                            >
-                                {i + 1}
-                            </button>
-                        ))}
+              return (
+                <Link
+                  key={item.id}
+                  to={`/productsDetails/${item.id}`}
+                  className="group bg-white rounded-md overflow-hidden transition-all duration-300 hover:shadow-lg"
+                >
+                  {/* Image */}
+                  <div className="w-full h-52 sm:h-56 lg:h-60 bg-[#F6F7FB] flex items-center justify-center relative">
+                    <img
+                      src={item.thumbnail}
+                      alt={item.title}
+                      className="w-32 sm:w-36 lg:w-40 object-contain transition-transform duration-300 group-hover:scale-110"
+                    />
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-4 text-center">
+                    <h3 className="font-josefin text-[#151875] text-base lg:text-lg font-bold mb-2 line-clamp-1">
+                      {item.title}
+                    </h3>
+
+                    {/* Colors */}
+                    <div className="flex justify-center gap-2 mb-3">
+                      <span className="w-3 h-3 rounded-full bg-[#DE9034]" />
+                      <span className="w-3 h-3 rounded-full bg-[#EC42A2]" />
+                      <span className="w-3 h-3 rounded-full bg-[#8568FF]" />
                     </div>
-                </div>
-            )}
-        </>
-    )
-}
 
-export default RightSite
+                    {/* Price */}
+                    <div className="flex justify-center gap-2 text-sm font-josefin">
+                      <span className="text-[#151875] font-semibold">
+                        ${price.final.toFixed(2)}
+                      </span>
+                      <span className="text-pink-500 line-through">
+                        ${price.original.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })
+          ) : (
+            <p className="col-span-full text-center py-10 text-[#151875] font-semibold">
+              No products found matching your filter.
+            </p>
+          )}
+        </div>
+      ) : (
+        /* ================= LIST VIEW ================= */
+        <div className="flex flex-col gap-6">
+          {currentItems.length ? (
+            currentItems.map((item) => {
+              const price = getPrice(item);
+
+              return (
+                <div
+                  key={item.id}
+                  className="group flex flex-col md:flex-row gap-5 bg-white p-4 rounded-md shadow-sm hover:shadow-md transition"
+                >
+                  {/* Image */}
+                  <Link
+                    to={`/productsDetails/${item.id}`}
+                    className="w-full md:w-56 lg:w-64 h-48 bg-[#F6F7FB] flex items-center justify-center rounded"
+                  >
+                    <img
+                      src={item.thumbnail}
+                      alt={item.title}
+                      className="w-32 object-contain group-hover:scale-105 transition"
+                    />
+                  </Link>
+
+                  {/* Info */}
+                  <div className="flex flex-col justify-between flex-1">
+                    <div>
+                      <h3 className="font-josefin text-[#111C85] text-lg font-bold mb-2">
+                        {item.title}
+                      </h3>
+
+                      <div className="flex flex-wrap items-center gap-3 mb-2">
+                        <span className="text-[#111C85] font-semibold">
+                          ${price.final.toFixed(2)}
+                        </span>
+                        <span className="text-pink-500 line-through">
+                          ${price.original.toFixed(2)}
+                        </span>
+
+                        {renderStars(item.rating)}
+                      </div>
+
+                      <p className="text-gray-500 text-sm line-clamp-2">
+                        {item.description}
+                      </p>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-3 mt-4">
+                      <button className="iconBtn">
+                        <BsCart2 size={16} />
+                      </button>
+                      <button className="iconBtn">
+                        <FaRegHeart size={15} />
+                      </button>
+                      <button className="iconBtn">
+                        <LuZoomIn size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <p className="text-center py-10 text-[#151875] font-semibold">
+              No products found matching your filter.
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* ================= Pagination ================= */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-10">
+          <div className="flex flex-wrap gap-2">
+            {[...Array(totalPages)].map((_, i) => {
+              const page = i + 1;
+              const active = currentPage === page;
+
+              return (
+                <button
+                  key={page}
+                  onClick={() => paginate(page)}
+                  className={`w-9 h-9 flex items-center justify-center border rounded text-sm transition
+                  ${
+                    active
+                      ? "bg-pink-500 text-white border-pink-500"
+                      : "bg-white text-gray-400 hover:bg-pink-500 hover:text-white"
+                  }`}
+                >
+                  {page}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default RightSite;
