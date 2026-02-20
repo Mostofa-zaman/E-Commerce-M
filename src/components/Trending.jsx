@@ -25,11 +25,9 @@ const ProductCard = ({ item }) => {
           transition-transform duration-300 group-hover:scale-110"
         />
       </div>
-
       <h3 className="font-lato text-[15px] sm:text-[16px] font-bold text-[#151875] mb-1 line-clamp-2">
         {title}
       </h3>
-
       <span className="font-josefin text-[14px] text-[#151875]">
         ${price}
       </span>
@@ -91,16 +89,13 @@ const Trending = () => {
         {/* Bottom Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          {/* Promo 1 */}
           <div className="bg-[#FFF6FB] p-6 relative min-h-[250px] rounded-md shadow-sm hover:shadow-md transition">
             <h3 className="font-josefin text-[22px] sm:text-[24px] lg:text-[26px] text-[#151875] font-semibold mb-2 leading-tight">
               23% off in all products
             </h3>
-
             <button className="font-lato text-[15px] font-semibold text-[#FB2E86] underline underline-offset-4 hover:no-underline">
               Shop Now
             </button>
-
             <img
               src={t1}
               alt="Promo"
@@ -113,11 +108,9 @@ const Trending = () => {
             <h3 className="font-josefin text-[22px] sm:text-[24px] lg:text-[26px] text-[#151875] font-semibold mb-2 leading-tight">
               23% off in all products
             </h3>
-
             <button className="font-lato text-[15px] font-semibold text-[#FB2E86] underline underline-offset-4 hover:no-underline">
               View Collection
             </button>
-
             <img
               src={t2}
               alt="Promo"
@@ -131,7 +124,6 @@ const Trending = () => {
               <SidebarItem key={item.id} item={item} />
             ))}
           </div>
-
         </div>
       </div>
     </section>
